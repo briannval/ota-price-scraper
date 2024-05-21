@@ -1,3 +1,4 @@
+import os
 import time
 
 from selenium.common.exceptions import NoSuchElementException
@@ -89,3 +90,12 @@ def hb_scraping(hotel_name):
 
 def expedia_scraping(hotel_name):
     pass
+
+
+def save_as_excel(df):
+    if not os.path.exists("result"):
+        os.makedirs("result")
+
+    file_path = os.path.join("result", "output.xlsx")
+    df.to_excel(file_path, sheet_name="Hotels", index=False)
+    print(f"Successfully downloaded to {file_path}")

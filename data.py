@@ -17,3 +17,5 @@ HOTEL_EXAMPLES = [
     "Four Seasons Jakarta",
     "Bulgari Resort Bali",
 ]  # TODO: read examples off a backend
+
+RES_EXCEL = "hotels.xlsx"
