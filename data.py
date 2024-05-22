@@ -1,5 +1,5 @@
 TIKET_URL = "https://www.tiket.com/hotel"
-AGODA_URL = ""
+AGODA_URL = "https://www.agoda.com/"
 TRAVELOKA_URL = "https://www.traveloka.com/en-id/hotel"
 # Traveloka uses defaulted URL to avoid captcha
 HB_URL = ""
@@ -7,8 +7,8 @@ EXPEDIA_URL = ""
 WEBBEDS_URL = ""
 
 HOTEL_EXAMPLES = [
-    "Hotel Ciputra Jakarta",
     "Hotel Indonesia Kempinski Jakarta",
+    "Hotel Ciputra Jakarta",
     "The Hermitage Jakarta",
     "Grand Hyatt Jakarta",
     "The Orient Jakarta",
