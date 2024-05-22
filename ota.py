@@ -8,9 +8,7 @@ from selenium.common.exceptions import (
     ElementClickInterceptedException,
     NoSuchElementException,
 )
-from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 
 from data import AGODA_URL, TIKET_URL, TRAVELOKA_URL
 
@@ -32,6 +30,9 @@ class Ota:
         self.df = None
 
     def __convert_scraped_string(self, s):
+        """
+        Utility: convert string with IDR and RP
+        """
         return int(
             "".join(
                 re.findall(r"\d+", s),
@@ -39,6 +40,9 @@ class Ota:
         )
 
     def __get_comparison(self, comparator, comparison):
+        """
+        Utility: compare target OTA with others
+        """
         if comparator == comparison:
             return "NO DIFF", 0
 
@@ -121,14 +125,6 @@ class Ota:
                 "/html/body/div[1]/div[5]/div[2]/div/div[2]/div/div[5]/div[2]/div",
             ).click()
             time.sleep(4)
-            """
-            ADS?
-            driver.find_element(
-                By.XPATH,
-                "/html/body/div[19]/div/div[2]/div/div[1]",
-            ).click()
-            time.sleep(2)
-            """
             res = self.__convert_scraped_string(
                 driver.find_element(
                     By.XPATH,
@@ -142,16 +138,12 @@ class Ota:
             print(f"Unable to scrape for {hotel_name} in Traveloka")
 
     def agoda_scraping(self, hotel_name, driver):
+        """
+        Scraping source from agoda.com
+        """
         try:
             driver.get(AGODA_URL)
             time.sleep(2)
-            """
-            driver.find_element(
-                By.XPATH,
-                "/html/body/div[9]/div[2]/div/section/section/div/div[2]/div[2]/div/div/div[1]/div/div[2]/div/div/div[2]/div",
-            )
-            time.sleep(1)
-            """
             input_element = driver.find_element(
                 By.XPATH,
                 "/html/body/div[9]/div[2]/div/section/section/div/div[2]/div[2]/div/div/div[1]/div/div[2]/div/div/div[2]/div/div/input",
@@ -175,12 +167,6 @@ class Ota:
                     ).click()
                     time.sleep(1)
 
-            """
-            actions = ActionChains(driver)
-            actions.send_keys(Keys.SPACE)
-            time.sleep(1)
-            actions.send_keys(Keys.SPACE)
-            """
             time.sleep(1)
             driver.find_element(
                 By.XPATH,
@@ -211,18 +197,27 @@ class Ota:
         pass
 
     def __prepare_for_download(self):
+        """
+        Utility: Convert to df and creating result/ directory
+        """
         if self.df is None:
             self.df = pd.DataFrame(self.scraping_results)
         if not os.path.exists("result"):
             os.makedirs("result")
 
     def download_as_excel(self):
+        """
+        Download result df as excel
+        """
         self.__prepare_for_download()
         file_path = os.path.join("result", "ota.xlsx")  # Default output path
         self.df.to_excel(file_path, sheet_name="Hotels", index=False)
         print(f"Successfully downloaded to {file_path}")
 
     def download_as_csv(self):
+        """
+        Download result df as csv
+        """
         self.__prepare_for_download()
         file_path = os.path.join("result", "ota.csv")  # Default output path
         self.df.to_csv(file_path, sep=",", index=False)
