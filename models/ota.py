@@ -37,6 +37,9 @@ class Ota(ABC):
             "Agoda": self.scraping_results["Agoda Price"][-1],
         }
 
+    def get_tiket_to_compare(self):
+        return self.scraping_results["Tiket Price"][-1]
+
     def scrape(self, hotel, driver):
         self.__init_hotel(hotel)
         self.__tiket_scraping(hotel, driver)
@@ -66,12 +69,12 @@ class Ota(ABC):
         Utility: compare target OTA with others
         """
         if comparator == comparison:
-            return "NO DIFF", 0
+            return "="
 
         if comparator > comparison:
-            return "HIGHER", (comparator - comparison)
+            return f"+{(comparator - comparison)}"
 
-        return "LOWER", (comparison - comparator)
+        return f"-{(comparison - comparator)}"
 
     def __init_hotel(self, hotel):
         """
@@ -154,9 +157,15 @@ class Ota(ABC):
                 ).text
             )
             self.__add_to_scraping_results("Traveloka Price", res)
+            comparison = self.__get_comparison(
+                self.get_tiket_to_compare(),
+                res,
+            )
+            self.__add_to_scraping_results("Traveloka Comparison", comparison)
             print(f"Result for traveloka: {res} \n")
         except Exception:
             self.__add_to_scraping_results("Traveloka Price", "UNAVAILABLE")
+            self.__add_to_scraping_results("Traveloka Comparison", "UNAVAILABLE")
             print(f"Unable to scrape for {hotel_name} in Traveloka")
 
     def __agoda_scraping(self, hotel_name, driver):
@@ -206,9 +215,15 @@ class Ota(ABC):
                 )[0].text
             )
             self.__add_to_scraping_results("Agoda Price", res)
+            comparison = self.__get_comparison(
+                self.get_tiket_to_compare(),
+                res,
+            )
+            self.__add_to_scraping_results("Agoda Comparison", comparison)
             print(f"Result for Agoda: {res} \n")
         except Exception:
             self.__add_to_scraping_results("Agoda Price", "UNAVAILABLE")
+            self.__add_to_scraping_results("Agoda Comparison", "UNAVAILABLE")
             print(f"Unable to scrape for {hotel_name} in Agoda")
 
     def __hb_scraping(self, hotel_name, driver):
