@@ -1,5 +1,3 @@
-import threading
-
 from selenium import webdriver as wd
 from selenium_stealth import stealth
 

@@ -1,5 +1,5 @@
 from driver.ota_driver import OtaDriver
-from models.ota_download import OtaDownload
+from scrapers.ota_download import OtaDownload
 
 HOTEL_EXAMPLES = [
     "Hotel Indonesia Kempinski Jakarta",
