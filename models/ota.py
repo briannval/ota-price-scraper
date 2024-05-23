@@ -3,10 +3,7 @@ import time
 from abc import ABC, abstractmethod
 from datetime import datetime as dt
 
-from selenium.common.exceptions import (
-    ElementClickInterceptedException,
-    NoSuchElementException,
-)
+from selenium.common.exceptions import ElementClickInterceptedException
 from selenium.webdriver.common.by import By
 
 TIKET_URL = "https://www.tiket.com/hotel"
@@ -26,6 +23,25 @@ class Ota(ABC):
     @abstractmethod
     def finish(self):
         pass
+
+    def reset(self):
+        self.scraping_results = {}
+
+    def get_recently_scraped(self):
+        if len(self.scraping_results["Tiket Price"]) == 0:
+            return "Empty"
+        return {
+            "Hotel": self.scraping_results["Hotel Name"][-1],
+            "Tiket": self.scraping_results["Tiket Price"][-1],
+            "Traveloka": self.scraping_results["Traveloka Price"][-1],
+            "Agoda": self.scraping_results["Agoda Price"][-1],
+        }
+
+    def scrape(self, hotel, driver):
+        self.__init_hotel(hotel)
+        self.__tiket_scraping(hotel, driver)
+        self.__traveloka_scraping(hotel, driver)
+        self.__agoda_scraping(hotel, driver)
 
     def __convert_scraped_string(self, s):
         """
@@ -53,11 +69,11 @@ class Ota(ABC):
             return "NO DIFF", 0
 
         if comparator > comparison:
-            return "HIGHER", ((comparator - comparison) / comparator)
+            return "HIGHER", (comparator - comparison)
 
-        return "LOWER", ((comparison - comparator) / comparator)
+        return "LOWER", (comparison - comparator)
 
-    def init_hotel(self, hotel):
+    def __init_hotel(self, hotel):
         """
         Initialize hotel name and scraping time & date
         """
@@ -66,7 +82,7 @@ class Ota(ABC):
         )
         self.__add_to_scraping_results("Hotel Name", hotel)
 
-    def tiket_scraping(self, hotel_name, driver):
+    def __tiket_scraping(self, hotel_name, driver):
         """
         Scraping source from tiket.com
         """
@@ -107,7 +123,7 @@ class Ota(ABC):
             self.__add_to_scraping_results("Tiket Price", "UNAVALABLE")
             print(f"Unable to scrape for {hotel_name} in Tiket")
 
-    def traveloka_scraping(self, hotel_name, driver):
+    def __traveloka_scraping(self, hotel_name, driver):
         """
         Scraping source from traveloka.com
         """
@@ -143,7 +159,7 @@ class Ota(ABC):
             self.__add_to_scraping_results("Traveloka Price", "UNAVAILABLE")
             print(f"Unable to scrape for {hotel_name} in Traveloka")
 
-    def agoda_scraping(self, hotel_name, driver):
+    def __agoda_scraping(self, hotel_name, driver):
         """
         Scraping source from agoda.com
         """
@@ -195,8 +211,8 @@ class Ota(ABC):
             self.__add_to_scraping_results("Agoda Price", "UNAVAILABLE")
             print(f"Unable to scrape for {hotel_name} in Agoda")
 
-    def hb_scraping(self, hotel_name, driver):
+    def __hb_scraping(self, hotel_name, driver):
         pass
 
-    def expedia_scraping(self, hotel_name, driver):
+    def __expedia_scraping(self, hotel_name, driver):
         pass
