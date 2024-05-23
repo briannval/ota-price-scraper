@@ -1,27 +1,31 @@
-import os
 import re
 import time
+from abc import ABC, abstractmethod
 from datetime import datetime as dt
 
-import pandas as pd
 from selenium.common.exceptions import (
     ElementClickInterceptedException,
     NoSuchElementException,
 )
 from selenium.webdriver.common.by import By
 
-from data import AGODA_URL, TIKET_URL, TRAVELOKA_URL
+TIKET_URL = "https://www.tiket.com/hotel"
+AGODA_URL = "https://www.agoda.com/"
+TRAVELOKA_URL = "https://www.traveloka.com/en-id/hotel"
 
 
-class Ota:
+class Ota(ABC):
     """
-    Class to scrape prices from various OTA websites
+    Abstract Class to scrape prices from various OTA websites
     """
 
     def __init__(self):
         self.name = "OTA Price Scraper"
         self.scraping_results = {}
-        self.df = None
+
+    @abstractmethod
+    def finish(self):
+        pass
 
     def __convert_scraped_string(self, s):
         """
@@ -99,7 +103,7 @@ class Ota:
             )
             self.__add_to_scraping_results("Tiket Price", res)
             print(f"Result for tiket: {res} \n")
-        except NoSuchElementException:
+        except Exception:
             self.__add_to_scraping_results("Tiket Price", "UNAVALABLE")
             print(f"Unable to scrape for {hotel_name} in Tiket")
 
@@ -135,7 +139,7 @@ class Ota:
             )
             self.__add_to_scraping_results("Traveloka Price", res)
             print(f"Result for traveloka: {res} \n")
-        except NoSuchElementException:
+        except Exception:
             self.__add_to_scraping_results("Traveloka Price", "UNAVAILABLE")
             print(f"Unable to scrape for {hotel_name} in Traveloka")
 
@@ -187,7 +191,7 @@ class Ota:
             )
             self.__add_to_scraping_results("Agoda Price", res)
             print(f"Result for Agoda: {res} \n")
-        except NoSuchElementException:
+        except Exception:
             self.__add_to_scraping_results("Agoda Price", "UNAVAILABLE")
             print(f"Unable to scrape for {hotel_name} in Agoda")
 
@@ -196,30 +200,3 @@ class Ota:
 
     def expedia_scraping(self, hotel_name, driver):
         pass
-
-    def __prepare_for_download(self):
-        """
-        Utility: Convert to df and creating result/ directory
-        """
-        if self.df is None:
-            self.df = pd.DataFrame(self.scraping_results)
-        if not os.path.exists("result"):
-            os.makedirs("result")
-
-    def download_as_excel(self):
-        """
-        Download result df as excel
-        """
-        self.__prepare_for_download()
-        file_path = os.path.join("result", "ota.xlsx")  # Default output path
-        self.df.to_excel(file_path, sheet_name="Hotels", index=False)
-        print(f"Successfully downloaded to {file_path}")
-
-    def download_as_csv(self):
-        """
-        Download result df as csv
-        """
-        self.__prepare_for_download()
-        file_path = os.path.join("result", "ota.csv")  # Default output path
-        self.df.to_csv(file_path, sep=",", index=False)
-        print(f"Successfully downloaded to {file_path}")
