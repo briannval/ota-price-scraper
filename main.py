@@ -33,9 +33,9 @@ def main():
         print(f"Progress: {str(i+1)}/{len(HOTEL_EXAMPLES)} HOTELS \n")
 
         ota.init_hotel(hotel)
+        ota.tiket_scraping(hotel, driver)
         ota.traveloka_scraping(hotel, driver)
         ota.agoda_scraping(hotel, driver)
-        ota.tiket_scraping(hotel, driver)
 
     ota.download_as_excel()
     ota.download_as_csv()

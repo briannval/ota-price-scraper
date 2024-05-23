@@ -20,24 +20,26 @@ class Ota:
 
     def __init__(self):
         self.name = "OTA Price Scraper"
-        self.scraping_results = {
-            "Date & Time": [],
-            "Hotel Name": [],
-            "Tiket Price": [],
-            "Traveloka Price": [],
-            "Agoda Price": [],
-        }
+        self.scraping_results = {}
         self.df = None
 
     def __convert_scraped_string(self, s):
         """
-        Utility: convert string with IDR and RP
+        Utility: convert string with IDR and RP to int
         """
         return int(
             "".join(
                 re.findall(r"\d+", s),
             ),
         )
+
+    def __add_to_scraping_results(self, column, res):
+        """
+        Utility: create if not exist column in dict and append
+        """
+        if column not in self.scraping_results:
+            self.scraping_results[column] = []
+        self.scraping_results[column].append(res)
 
     def __get_comparison(self, comparator, comparison):
         """
@@ -55,10 +57,10 @@ class Ota:
         """
         Initialize hotel name and scraping time & date
         """
-        self.scraping_results["Date & Time"].append(
-            dt.now().strftime("%Y-%m-%d %H:%M:%S")
+        self.__add_to_scraping_results(
+            "Date & Time", dt.now().strftime("%Y-%m-%d %H:%M:%S")
         )
-        self.scraping_results["Hotel Name"].append(hotel)
+        self.__add_to_scraping_results("Hotel Name", hotel)
 
     def tiket_scraping(self, hotel_name, driver):
         """
@@ -88,17 +90,17 @@ class Ota:
                 By.XPATH,
                 "/html/body/div[1]/div[2]/div[3]/div/div[2]/div[2]/div/div[2]/button",
             ).click()
-            time.sleep(4)
+            time.sleep(5)
             res = self.__convert_scraped_string(
                 driver.find_element(
                     By.XPATH,
                     "//h3[contains(text(), 'IDR')]",
                 ).text
             )
-            self.scraping_results["Tiket Price"].append(res)
+            self.__add_to_scraping_results("Tiket Price", res)
             print(f"Result for tiket: {res} \n")
         except NoSuchElementException:
-            self.scraping_results["Tiket Price"].append("UNAVAILABLE")
+            self.__add_to_scraping_results("Tiket Price", "UNAVALABLE")
             print(f"Unable to scrape for {hotel_name} in Tiket")
 
     def traveloka_scraping(self, hotel_name, driver):
@@ -131,10 +133,10 @@ class Ota:
                     "/html/body/div[1]/div[5]/div[2]/div/div[2]/div[3]/div/div/div[2]/div[3]/div/div/div[1]/div[3]/div/div[3]/div[1]",
                 ).text
             )
-            self.scraping_results["Traveloka Price"].append(res)
+            self.__add_to_scraping_results("Traveloka Price", res)
             print(f"Result for traveloka: {res} \n")
         except NoSuchElementException:
-            self.scraping_results["Traveloka Price"].append("UNAVAILABLE")
+            self.__add_to_scraping_results("Traveloka Price", "UNAVAILABLE")
             print(f"Unable to scrape for {hotel_name} in Traveloka")
 
     def agoda_scraping(self, hotel_name, driver):
@@ -183,11 +185,10 @@ class Ota:
                     By.XPATH, "//span[@class='PropertyCardPrice__Value']"
                 )[0].text
             )
-            self.scraping_results["Agoda Price"].append(res)
+            self.__add_to_scraping_results("Agoda Price", res)
             print(f"Result for Agoda: {res} \n")
-
         except NoSuchElementException:
-            self.scraping_results["Agoda Price"].append("UNAVAILABLE")
+            self.__add_to_scraping_results("Agoda Price", "UNAVAILABLE")
             print(f"Unable to scrape for {hotel_name} in Agoda")
 
     def hb_scraping(self, hotel_name, driver):
