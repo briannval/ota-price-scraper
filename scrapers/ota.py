@@ -89,6 +89,7 @@ class Ota(ABC):
         """
         Scraping source from tiket.com
         """
+        res = "UNAVAILABLE"
         try:
             driver.get(TIKET_URL)
             time.sleep(2)
@@ -120,16 +121,17 @@ class Ota(ABC):
                     "//h3[contains(text(), 'IDR')]",
                 ).text
             )
-            self.__add_to_scraping_results("Tiket Price", res)
             print(f"Result for tiket: {res} \n")
         except Exception:
-            self.__add_to_scraping_results("Tiket Price", "UNAVALABLE")
             print(f"Unable to scrape for {hotel_name} in Tiket")
+        self.__add_to_scraping_results("Tiket Price", res)
 
     def __traveloka_scraping(self, hotel_name, driver):
         """
         Scraping source from traveloka.com
         """
+        res = "UNAVAILABLE"
+        comparison = "UNAVAILABLE"
         try:
             driver.get(TRAVELOKA_URL)
             time.sleep(2)
@@ -156,22 +158,22 @@ class Ota(ABC):
                     "/html/body/div[1]/div[5]/div[2]/div/div[2]/div[3]/div/div/div[2]/div[3]/div/div/div[1]/div[3]/div/div[3]/div[1]",
                 ).text
             )
-            self.__add_to_scraping_results("Traveloka Price", res)
             comparison = self.__get_comparison(
                 self.get_tiket_to_compare(),
                 res,
             )
-            self.__add_to_scraping_results("Traveloka Comparison", comparison)
             print(f"Result for traveloka: {res} \n")
         except Exception:
-            self.__add_to_scraping_results("Traveloka Price", "UNAVAILABLE")
-            self.__add_to_scraping_results("Traveloka Comparison", "UNAVAILABLE")
             print(f"Unable to scrape for {hotel_name} in Traveloka")
+        self.__add_to_scraping_results("Traveloka Price", res)
+        self.__add_to_scraping_results("Traveloka Comparison", comparison)
 
     def __agoda_scraping(self, hotel_name, driver):
         """
         Scraping source from agoda.com
         """
+        res = "UNAVAILABLE"
+        comparison = "UNAVAILABLE"
         try:
             driver.get(AGODA_URL)
             time.sleep(2)
@@ -214,17 +216,15 @@ class Ota(ABC):
                     By.XPATH, "//span[@class='PropertyCardPrice__Value']"
                 )[0].text
             )
-            self.__add_to_scraping_results("Agoda Price", res)
             comparison = self.__get_comparison(
                 self.get_tiket_to_compare(),
                 res,
             )
-            self.__add_to_scraping_results("Agoda Comparison", comparison)
             print(f"Result for Agoda: {res} \n")
         except Exception:
-            self.__add_to_scraping_results("Agoda Price", "UNAVAILABLE")
-            self.__add_to_scraping_results("Agoda Comparison", "UNAVAILABLE")
             print(f"Unable to scrape for {hotel_name} in Agoda")
+        self.__add_to_scraping_results("Agoda Price", res)
+        self.__add_to_scraping_results("Agoda Comparison", comparison)
 
     def __hb_scraping(self, hotel_name, driver):
         pass
