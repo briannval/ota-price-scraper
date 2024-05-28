@@ -5,9 +5,10 @@ class OtaApi(Ota):
 
     def __init__(self):
         super().__init__()
+        self.desc = "OTA Price Scraper For Basic API Use"
 
     def finish(self):
-        return self.scraping_results
+        return self.desc
 
     def tiket_only_scraping(self, hotel, driver):
         return super()._tiket_scraping(hotel, driver, api=True)

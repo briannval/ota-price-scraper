@@ -16,6 +16,7 @@ class OtaDownload(Ota):
         super().__init__()
         self.df = None
         self.file_path = os.path.join("result", "ota.xlsx")
+        self.desc = "OTA Price Scraper For Local Download"
 
     def finish(self):
         self.__download_as_csv()

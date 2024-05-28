@@ -17,7 +17,6 @@ class Ota(ABC):
     """
 
     def __init__(self):
-        self.name = "OTA Price Scraper"
         self.scraping_results = {}
 
     @abstractmethod
