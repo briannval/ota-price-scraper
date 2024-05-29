@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hotel Price Scraper</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+</head>
+<body>
+    <h1>Hotel Price Scraper</h1>
+    <form id="scraperForm">
+        <label for="hotel">Hotel Name:</label>
+        <input type="text" id="hotel" name="hotel" required>
+        <br><br>
+        <label>Select API:</label>
+        <br>
+        <input type="radio" id="tiket" name="api" value="tiket" required>
+        <label for="tiket">Tiket</label>
+        <br>
+        <input type="radio" id="traveloka" name="api" value="traveloka" required>
+        <label for="traveloka">Traveloka</label>
+        <br>
+        <input type="radio" id="agoda" name="api" value="agoda" required>
+        <label for="agoda">Agoda</label>
+        <br>
+        <input type="radio" id="all" name="api" value="all" required>
+        <label for="all">All</label>
+        <br><br>
+        <button type="submit">Get Prices</button>
+    </form>
+
+    <div id="loading">
+        <h2>Loading...</h2>
+    </div>
+    
+    <div id="results"></div>
+</body>
+</html>
