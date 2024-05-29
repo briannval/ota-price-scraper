@@ -17,7 +17,6 @@ class Ota(ABC):
     """
 
     def __init__(self):
-        self.name = "OTA Price Scraper"
         self.scraping_results = {}
 
     @abstractmethod
@@ -27,24 +26,14 @@ class Ota(ABC):
     def reset(self):
         self.scraping_results = {}
 
-    def get_recently_scraped(self):
-        if len(self.scraping_results["Tiket Price"]) == 0:
-            return "Empty"
-        return {
-            "Hotel": self.scraping_results["Hotel Name"][-1],
-            "Tiket": self.scraping_results["Tiket Price"][-1],
-            "Traveloka": self.scraping_results["Traveloka Price"][-1],
-            "Agoda": self.scraping_results["Agoda Price"][-1],
-        }
-
     def get_tiket_to_compare(self):
         return self.scraping_results["Tiket Price"][-1]
 
     def scrape(self, hotel, driver):
-        self.__init_hotel(hotel)
-        self.__tiket_scraping(hotel, driver)
-        self.__traveloka_scraping(hotel, driver)
-        self.__agoda_scraping(hotel, driver)
+        self._init_hotel(hotel)
+        self._tiket_scraping(hotel, driver)
+        self._traveloka_scraping(hotel, driver)
+        self._agoda_scraping(hotel, driver)
 
     def __convert_scraped_string(self, s):
         """
@@ -76,7 +65,7 @@ class Ota(ABC):
 
         return f"-{(comparison - comparator)}"
 
-    def __init_hotel(self, hotel):
+    def _init_hotel(self, hotel):
         """
         Initialize hotel name and scraping time & date
         """
@@ -85,7 +74,7 @@ class Ota(ABC):
         )
         self.__add_to_scraping_results("Hotel Name", hotel)
 
-    def __tiket_scraping(self, hotel_name, driver):
+    def _tiket_scraping(self, hotel_name, driver, api=False):
         """
         Scraping source from tiket.com
         """
@@ -124,9 +113,11 @@ class Ota(ABC):
             print(f"Result for tiket: {res} \n")
         except Exception:
             print(f"Unable to scrape for {hotel_name} in Tiket")
+        if api:
+            return res
         self.__add_to_scraping_results("Tiket Price", res)
 
-    def __traveloka_scraping(self, hotel_name, driver):
+    def _traveloka_scraping(self, hotel_name, driver, api=False):
         """
         Scraping source from traveloka.com
         """
@@ -158,17 +149,20 @@ class Ota(ABC):
                     "/html/body/div[1]/div[5]/div[2]/div/div[2]/div[3]/div/div/div[2]/div[3]/div/div/div[1]/div[3]/div/div[3]/div[1]",
                 ).text
             )
-            comparison = self.__get_comparison(
-                self.get_tiket_to_compare(),
-                res,
-            )
+            if not api:
+                comparison = self.__get_comparison(
+                    self.get_tiket_to_compare(),
+                    res,
+                )
             print(f"Result for traveloka: {res} \n")
         except Exception:
             print(f"Unable to scrape for {hotel_name} in Traveloka")
+        if api:
+            return res
         self.__add_to_scraping_results("Traveloka Price", res)
         self.__add_to_scraping_results("Traveloka Comparison", comparison)
 
-    def __agoda_scraping(self, hotel_name, driver):
+    def _agoda_scraping(self, hotel_name, driver, api=False):
         """
         Scraping source from agoda.com
         """
@@ -216,18 +210,21 @@ class Ota(ABC):
                     By.XPATH, "//span[@class='PropertyCardPrice__Value']"
                 )[0].text
             )
-            comparison = self.__get_comparison(
-                self.get_tiket_to_compare(),
-                res,
-            )
+            if not api:
+                comparison = self.__get_comparison(
+                    self.get_tiket_to_compare(),
+                    res,
+                )
             print(f"Result for Agoda: {res} \n")
         except Exception:
             print(f"Unable to scrape for {hotel_name} in Agoda")
+        if api:
+            return res
         self.__add_to_scraping_results("Agoda Price", res)
         self.__add_to_scraping_results("Agoda Comparison", comparison)
 
-    def __hb_scraping(self, hotel_name, driver):
+    def _hb_scraping(self, hotel_name, driver):
         pass
 
-    def __expedia_scraping(self, hotel_name, driver):
+    def _expedia_scraping(self, hotel_name, driver):
         pass
