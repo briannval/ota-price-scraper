@@ -1,5 +1,6 @@
 from driver.ota_driver import OtaDriver
 from scrapers.ota_download import OtaDownload
+from scrapers.ota_mongo import OtaMongo
 
 HOTEL_EXAMPLES = [
     "Hotel Indonesia Kempinski Jakarta",
@@ -14,9 +15,15 @@ HOTEL_EXAMPLES = [
 ]
 
 
-def run_ota_download():
+def run():
     ota_driver = OtaDriver.get_driver()
-    ota_download = OtaDownload()
+
+    driver_choice = int(input("Choose: \n1. Download\n2. Mongo\n>"))
+
+    if driver_choice == 1:
+        ota_download = OtaDownload()
+    else:
+        ota_download = OtaMongo()
 
     for i, hotel in enumerate(HOTEL_EXAMPLES):
         print("=========================================")
@@ -30,4 +37,4 @@ def run_ota_download():
 
 
 if __name__ == "__main__":
-    run_ota_download()
+    run()
